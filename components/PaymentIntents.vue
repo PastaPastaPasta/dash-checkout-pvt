@@ -1,36 +1,5 @@
 <template>
-  <div>
-    <v-banner
-      v-for="(intent, idx) in freshPaymentIntents"
-      :key="idx"
-      :value="paymentIntentsVisible[intent.$id]"
-      sticky
-      single-line
-      outlined=""
-      transition="slide-y-transition"
-    >
-      <v-avatar slot="icon" color="deep-purple accent-4" size="40">
-        <v-icon icon="mdi-account" color="white">
-          mdi-account
-        </v-icon>
-      </v-avatar>
-      <b>
-        {{ intent.requesteeUserName }}
-      </b>
-      is ready to pay.
-      <template v-slot:actions>
-        <v-btn
-          dark
-          color="green"
-          @click="requestFromUserId(intent.requesteeUserId)"
-          >Request Money</v-btn
-        >
-        <v-btn text color="red" @click="dismissIntent(intent.$id)"
-          >Dismiss</v-btn
-        >
-      </template>
-    </v-banner>
-  </div>
+  <div></div>
 </template>
 
 <script lang="ts">

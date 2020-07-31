@@ -2,12 +2,20 @@
   <v-app>
     <v-main>
       <v-container>
+        <v-sheet
+          v-if="!$store.state.isClientWalletSynced"
+          color="orange lighten-2"
+          >Wallet syncing</v-sheet
+        >
+        <v-sheet v-if="$store.state.isClientWalletSynced" color="green"
+          >Wallet synced</v-sheet
+        >
         <nuxt />
-        <v-overlay
+        <!-- <v-overlay
           color="#012060FF"
           :value="!this.$store.state.isClientWalletSynced"
-        >
-          <!-- <v-overlay :value="false"> -->
+        > -->
+        <v-overlay :value="false">
           <div class="loadcontainer">
             <div class="holder">
               <div class="box"></div>
