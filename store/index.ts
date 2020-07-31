@@ -12,11 +12,11 @@ let client: any
 
 const getInitState = (): any => ({
   mnemonic:
-    'polar valve life beyond camera step erupt festival drama few body recall',
-  identityId: '8j4wiCGuBMSYH3NDkfrhvJ44MqLYrfTBuyvHLoNaM3mX',
+    'snake apology outside finish quick group busy bicycle reward neglect antenna vanish',
+  identityId: '5kVkvEFj7x3AM63DZxMLXomrP4rTTFpu98chqr8RDnNY',
   name: {
-    label: 'DashDonuts',
-    docId: '8y5TPw1yq9Ypp81vqMitLJFjMQUYXeKQ12jmhq7rNCkE',
+    label: 'DashStoreFront',
+    docId: '5qJkLTHsok1uBR59JEj5HvWis24VcnAJZi7a4df3YBXm',
   },
   isClientError: false,
   clientErrorMsg: '',
