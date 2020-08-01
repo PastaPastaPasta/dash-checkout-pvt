@@ -23,7 +23,7 @@
             <v-container fluid>
               <v-row dense>
                 <v-col v-for="card in cards" :key="card.title" cols="4">
-                  <v-card class="ma-2" rounded @click="e1 = 2">
+                  <v-card class="ma-2" rounded @click="selectStoreItem(card)">
                     <v-img
                       :src="card.src"
                       class="white--text align-end"
@@ -65,11 +65,12 @@
             <v-tabs-items v-model="tab">
               <v-tab-item>
                 <v-card-text class="text-center justify-center py-6">
-                  Choose for a single time purchase.
+                  Choose for a single time purchase.<br />
+                  {{ $store.getters.qrCheckout }}
                 </v-card-text>
                 <v-card-text class="text-center justify-center py-6">
                   <qrcode
-                    :value="$store.state.name.label"
+                    :value="$store.getters.qrCheckout"
                     tag="img"
                     style="margin-to: -5px;"
                   ></qrcode>
@@ -141,16 +142,25 @@ export default Vue.extend({
       cards: [
         {
           title: '1 USD',
+          name: 'Dash Donuts Giftcard',
+          fiatAmount: 1,
+          fiatSymbol: 'USD',
           src: require('~/assets/dashdonuts.png'),
           flex: 6,
         },
         {
           title: '2 USD',
+          name: 'Airtime Balance',
+          fiatAmount: 2,
+          fiatSymbol: 'USD',
           src: require('~/assets/airtime.png'),
           flex: 6,
         },
         {
           title: '4 USD',
+          name: 'Store Giftcard',
+          fiatAmount: 4,
+          fiatSymbol: 'USD',
           src: require('~/assets/giftcard.png'),
           flex: 6,
         },
@@ -237,6 +247,10 @@ export default Vue.extend({
       'getAddressSummary',
       'refundPaymentRequest',
     ]),
+    selectStoreItem(item: any) {
+      this.$store.commit('setStoreItem', item)
+      this.e1 = 2
+    },
     async sendRequest() {
       console.log('this.mode :>> ', this.mode)
       if (this.mode === 'Amend') {

@@ -1,5 +1,6 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import dashcore from '@dashevo/dashcore-lib'
+import { v4 as uuidv4 } from 'uuid'
 
 // import { encrypt, decrypt } from 'dash-secure-message'
 // const { Address, Unit } = dashcore;
@@ -22,6 +23,15 @@ const getInitState = (): any => ({
   clientErrorMsg: '',
   isClientWalletSynced: false,
   snackbar: { show: false, color: 'red', text: '', timestamp: 0 },
+  selectedItem: {
+    invoiceId: '',
+    name: '',
+    fiatAmount: 0,
+    fiatSymbol: 'USD',
+  },
+  rates: {
+    usd: 72, // TODO load and refresh from api
+  },
   pos: {
     currency: 'USD',
     requesteeUserId: '',
@@ -31,7 +41,6 @@ const getInitState = (): any => ({
     prevDocument: {},
     mode: 'newSale',
   },
-  paymentIntentsVisible: {},
 })
 
 export const state = () => getInitState()
@@ -40,11 +49,20 @@ export type RootState = ReturnType<typeof state>
 
 export const getters: GetterTree<RootState, RootState> = {
   isError: (state) => state.isClientError,
+  qrCheckout: (state) => {
+    return state.name.label.toLowerCase() + '#' + state.selectedItem.invoiceId
+  },
 }
 
 export const mutations: MutationTree<RootState> = {
   dismissPaymentIntent: (state, docId: string) => {
     state.paymentIntentsVisible[docId] = false
+  },
+  setStoreItem: (state, item) => {
+    state.selectedItem.invoiceId = uuidv4().split('-')[0]
+    state.selectedItem.name = item.name
+    state.selectedItem.fiatAmount = item.fiatAmount
+    state.selectedItem.fiatSymbol = item.fiatSymbol
   },
   setPOSOptions: (state, POSOpts) => {
     // state.pos.currency =
