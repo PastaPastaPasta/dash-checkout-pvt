@@ -7,7 +7,7 @@
     flat
     hide-no-data
     hide-details
-    label="Customer name"
+    label="Enter Dash Name"
     solo
     :value="value"
     @input="$emit('input', $event)"
