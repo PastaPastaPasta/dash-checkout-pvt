@@ -1,14 +1,14 @@
 <template>
   <div>
-    <v-stepper v-model="e1">
+    <v-stepper v-model="checkoutStep">
       <v-stepper-header>
-        <v-stepper-step :complete="e1 > 1" step="1" editable
+        <v-stepper-step :complete="checkoutStep > 1" step="1" editable
           >Select item</v-stepper-step
         >
 
         <v-divider></v-divider>
 
-        <v-stepper-step :complete="e1 > 2" step="2"
+        <v-stepper-step :complete="checkoutStep > 2" step="2"
           >Connect Wallet</v-stepper-step
         >
 
@@ -39,65 +39,8 @@
             </v-container>
           </v-card>
         </v-stepper-content>
-
         <v-stepper-content step="2">
-          <v-card class="mx-auto mb-6" max-width="550px">
-            <v-card-title class="text-center justify-center py-6">
-              <h1 class="font-weight-bold display-1">Checkout</h1>
-            </v-card-title>
-            <v-card-text class="text-center justify-center py-6">
-              Scan the QR Code with
-              <a target="_blank" href="http://evowallet.io">EvoWallet</a> to
-              checkout.
-            </v-card-text>
-
-            <v-tabs v-model="tab" centered>
-              <v-tab>
-                Guest
-              </v-tab>
-              <v-tab>
-                Signup
-              </v-tab>
-              <v-tab>
-                By Name
-              </v-tab>
-            </v-tabs>
-            <v-tabs-items v-model="tab">
-              <v-tab-item>
-                <v-card-text class="text-center justify-center py-6">
-                  Choose for a single time purchase.<br />
-                  {{ $store.getters.qrCheckout }}
-                </v-card-text>
-                <v-card-text class="text-center justify-center py-6">
-                  <qrcode
-                    :value="$store.getters.qrCheckout"
-                    tag="img"
-                    style="margin-to: -5px;"
-                  ></qrcode>
-                </v-card-text>
-              </v-tab-item>
-              <v-tab-item>
-                <v-card-text class="text-center justify-center py-6">
-                  <v-card-text class="text-center justify-center py-6">
-                    Choose to enable "pay by name" in the future.
-                  </v-card-text>
-                  <qrcode
-                    :value="$store.state.name.label"
-                    tag="img"
-                    style="margin-to: -5px;"
-                  ></qrcode>
-                </v-card-text>
-              </v-tab-item>
-              <v-tab-item>
-                <v-card-text class="text-center justify-center py-6">
-                  <v-card-text class="text-center justify-center py-6">
-                    Signed up users can enter their name to pay.
-                  </v-card-text>
-                  <NameAutocomplete v-model="customer" />
-                </v-card-text>
-              </v-tab-item>
-            </v-tabs-items>
-          </v-card>
+          <ConnectWallet />
         </v-stepper-content>
 
         <v-stepper-content step="3"> </v-stepper-content>
@@ -113,18 +56,18 @@ import { Unit } from '@dashevo/dashcore-lib'
 
 // @ts-ignore
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-import NameAutocomplete from '../components/NameAutocomplete.vue'
+// import NameAutocomplete from '../components/NameAutocomplete.vue'
+import ConnectWallet from '../components/ConnectWallet.vue'
 
 Vue.component(VueQrcode.name, VueQrcode)
 // const timestamp = () => Math.floor(Date.now() / 1000)
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export default Vue.extend({
-  components: { NameAutocomplete },
+  components: { ConnectWallet },
   data: () => {
     const data: {
       cards: any
-      tab: any
       e1: number
       mode: string
       memo: string
@@ -165,7 +108,6 @@ export default Vue.extend({
           flex: 6,
         },
       ],
-      tab: null,
       e1: 1,
       mode: 'newSale',
       status: '',
@@ -183,6 +125,15 @@ export default Vue.extend({
     return data
   },
   computed: {
+    checkoutStep: {
+      get() {
+        return this.$store.getters.checkoutStep
+      },
+      set(value) {
+        console.log('value :>> ', value)
+        this.$store.commit('clearStoreItem')
+      },
+    },
     dashReceived() {
       return Unit.fromSatoshis(this.satoshisReceived).toBTC()
     },
@@ -249,7 +200,7 @@ export default Vue.extend({
     ]),
     selectStoreItem(item: any) {
       this.$store.commit('setStoreItem', item)
-      this.e1 = 2
+      // this.e1 = 2
     },
     async sendRequest() {
       console.log('this.mode :>> ', this.mode)
