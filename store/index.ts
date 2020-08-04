@@ -28,6 +28,7 @@ const getInitState = (): any => ({
     name: '',
     fiatAmount: 0,
     fiatSymbol: 'USD',
+    intentDoc: {},
   },
   rates: {
     usd: 72, // TODO load and refresh from api
@@ -52,6 +53,16 @@ export const getters: GetterTree<RootState, RootState> = {
   qrCheckout: (state) => {
     return state.name.label + '#' + state.selectedItem.invoiceId
   },
+  checkoutStep: (state) => {
+    const { invoiceId, intentDoc } = state.selectedItem
+    if (Object.keys(intentDoc).length > 0) {
+      return 3
+    } else if (invoiceId !== '') {
+      return 2
+    } else {
+      return 1
+    }
+  },
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -63,6 +74,16 @@ export const mutations: MutationTree<RootState> = {
     state.selectedItem.name = item.name
     state.selectedItem.fiatAmount = item.fiatAmount
     state.selectedItem.fiatSymbol = item.fiatSymbol
+  },
+  clearStoreItem: (state) => {
+    state.selectedItem.invoiceId = ''
+    state.selectedItem.name = ''
+    state.selectedItem.fiatAmount = 0
+    state.selectedItem.fiatSymbol = 'USD'
+    state.selectedItem.intentDoc = {}
+  },
+  setIntentDoc: (state, document) => {
+    state.selectedItem.intentDoc = { ...document }
   },
   setPOSOptions: (state, POSOpts) => {
     // state.pos.currency =
