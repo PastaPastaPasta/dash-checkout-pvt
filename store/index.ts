@@ -50,7 +50,7 @@ export type RootState = ReturnType<typeof state>
 export const getters: GetterTree<RootState, RootState> = {
   isError: (state) => state.isClientError,
   qrCheckout: (state) => {
-    return state.name.label.toLowerCase() + '#' + state.selectedItem.invoiceId
+    return state.name.label + '#' + state.selectedItem.invoiceId
   },
 }
 
@@ -184,7 +184,7 @@ export const actions: ActionTree<RootState, RootState> = {
       },
       apps: {
         PaymentRequest: {
-          contractId: 'BJazojioGy5GryCfgCNskD6crCEbfrP7YzEj7CydxKEi',
+          contractId: '3hDXHbfujz94Uaa2mntK9daPQJZmhfGfyE9QGDkN3Ygc',
         },
       },
     })
