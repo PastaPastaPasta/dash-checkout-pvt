@@ -1,5 +1,6 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import dashcore from '@dashevo/dashcore-lib'
+// @ts-ignore
 import { v4 as uuidv4 } from 'uuid'
 
 // import { encrypt, decrypt } from 'dash-secure-message'
@@ -29,7 +30,42 @@ const getInitState = (): any => ({
     fiatAmount: 0,
     fiatSymbol: 'USD',
     intentDoc: {},
+    requestDoc: {},
   },
+  // selectedItem: {
+  //   invoiceId: 'f7a3ea22',
+  //   name: 'Airtime Balance',
+  //   fiatAmount: 2,
+  //   fiatSymbol: 'USD',
+  //   intentDoc: {
+  //     $id: 'DhAp6BpUY1HkyALM4QSRe1rWC2ocNyfkpnRfsAA1FSWR',
+  //     $type: 'PaymentIntent',
+  //     $dataContractId: '3hDXHbfujz94Uaa2mntK9daPQJZmhfGfyE9QGDkN3Ygc',
+  //     $ownerId: '8scjHrSVeLbiGtBiy1rzHaJjhaAU2wzkoj93LzmEc1zw',
+  //     $revision: 1,
+  //     invoiceId: 'f7a3ea22',
+  //     timestamp: 1596699138,
+  //     requesteeUserId: 'GQSiSvBV4jiWeeqRJq5ArcB9uimMcV5VecvCFJTSbJiw',
+  //     requesterUserId: '5qJkLTHsok1uBR59JEj5HvWis24VcnAJZi7a4df3YBXm',
+  //     encRefundAddress: 'yTAMp2CQHcqzJeHwrXopzHGcSpqNZahmrT',
+  //     requesteeUserName: 'MrFoxtastic',
+  //     requesterUserName: 'DashStoreFront',
+  //   },
+  //   requestDoc: {
+  //     requesterUserId: '5qJkLTHsok1uBR59JEj5HvWis24VcnAJZi7a4df3YBXm',
+  //     requesterUserName: 'DashStoreFront',
+  //     requesteeUserId: 'GQSiSvBV4jiWeeqRJq5ArcB9uimMcV5VecvCFJTSbJiw',
+  //     requesteeUserName: 'MrFoxtastic',
+  //     memo: 'Airtime Balance',
+  //     refId: '',
+  //     invoiceId: 'f7a3ea22',
+  //     encAddress: 'yMspMem4ZD49Dpfv7QuQTFDay3nyahKTz4',
+  //     encSatoshis: '2176487',
+  //     encFiatAmount: '2',
+  //     encFiatSymbol: 'USD',
+  //     timestamp: 1596699148,
+  //   },
+  // },
   rates: {
     usd: 72, // TODO load and refresh from api
   },
@@ -81,9 +117,13 @@ export const mutations: MutationTree<RootState> = {
     state.selectedItem.fiatAmount = 0
     state.selectedItem.fiatSymbol = 'USD'
     state.selectedItem.intentDoc = {}
+    state.selectedItem.requestDoc = {}
   },
   setIntentDoc: (state, document) => {
     state.selectedItem.intentDoc = { ...document }
+  },
+  setRequestDoc: (state, document) => {
+    state.selectedItem.requestDoc = { ...document }
   },
   setPOSOptions: (state, POSOpts) => {
     // state.pos.currency =
@@ -366,6 +406,7 @@ export const actions: ActionTree<RootState, RootState> = {
       fiatSymbol,
       memo = '',
       refId = '',
+      invoiceId = '',
       address = undefined,
     }
   ) {
@@ -385,6 +426,7 @@ export const actions: ActionTree<RootState, RootState> = {
       fiatSymbol,
       memo,
       refId,
+      invoiceId,
       address,
     })
     return document
@@ -428,6 +470,7 @@ export const actions: ActionTree<RootState, RootState> = {
       satoshis,
       memo = '',
       refId = '',
+      invoiceId = '',
       fiatAmount = 0,
       fiatSymbol = '',
       address = undefined,
@@ -445,7 +488,7 @@ export const actions: ActionTree<RootState, RootState> = {
     //   .privateKey.toString()
 
     if (address === undefined) {
-      address = await dispatch('getUntouchedAddress')
+      address = await dispatch('getUntouchedAddress') // TODO use dashpay derrived secret, don't expose mnemonic
       address = address.address
     }
 
@@ -463,6 +506,7 @@ export const actions: ActionTree<RootState, RootState> = {
       requesteeUserName,
       memo,
       refId,
+      invoiceId,
       encAddress: address,
       encSatoshis: satoshis.toString(),
       encFiatAmount: fiatAmount.toString(),

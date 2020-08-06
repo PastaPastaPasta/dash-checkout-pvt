@@ -73,34 +73,28 @@ export default Vue.extend({
       tab: any
     } = {
       paymentIntents: {},
-      tab: 0,
+      tab: null,
     }
     return data
   },
   created() {
-    this.pollPaymentIntents() // TODO enable
+    this.pollPaymentIntents() // TODO better to use a watcher for checkoutStep === 2
   },
-  async mounted() {},
+  mounted() {
+    console.log('this.tab :>> ', this.tab)
+  },
   methods: {
-    ...mapActions(['queryDocuments']),
-    requestFromUserId(requesteeUserId: string) {
-      const intent = this.paymentIntents[requesteeUserId]
-      console.log('intent :>> ', intent)
-      const refId = intent.$id
-      const requesteeUserName = intent.requesteeUserName
-      const fiatAmount = intent.encFiatAmount
-      const POSOpts = {
-        refId,
-        requesteeUserId,
-        requesteeUserName,
-        fiatAmount,
-        mode: 'Intent',
-      }
-      //   this.$store.commit('setPOSOptions', POSOpts)
-      //   this.$router.push('/charge') // TODO set step 3
-    },
+    ...mapActions(['queryDocuments', 'requestFiat']),
     async pollPaymentIntents() {
-      //   if (this.$router.currentRoute.path !== '/') return
+      console.log(
+        'this.$store.getters.checkoutStep :>> ',
+        this.$store.getters.checkoutStep
+      )
+      if (this.$store.getters.checkoutStep !== 2) {
+        await sleep(2000)
+        this.pollPaymentIntents()
+        return
+      }
 
       const queryOpts = {
         limit: 1,
@@ -118,11 +112,33 @@ export default Vue.extend({
         queryOpts,
       })
       if (documents.length) {
-        this.$store.commit('setIntentDoc', document)
-      } else {
-        await sleep(1000)
-        this.pollPaymentIntents()
+        const intent = documents[0].toJSON()
+        this.$store.commit('setIntentDoc', intent)
+        this.$store.commit('showSnackbar', {
+          text: `Received Intent from ${intent.requesteeUserName}`,
+          color: 'blue',
+        })
+
+        const requestDoc = await this.requestFiat({
+          requesteeUserId: intent.requesteeUserId,
+          requesteeUserName: intent.requesteeUserName,
+          refId: intent.$id,
+          fiatAmount: this.$store.state.selectedItem.fiatAmount,
+          fiatSymbol: this.$store.state.selectedItem.fiatSymbol,
+          memo: this.$store.state.selectedItem.name,
+          invoiceId: this.$store.state.selectedItem.invoiceId,
+          //   address = undefined,
+        })
+        console.log('requestDoc :>> ', requestDoc)
+        this.$store.commit('setRequestDoc', requestDoc)
+
+        this.$store.commit('showSnackbar', {
+          text: `Sent Request to ${documents[0].data.requesteeUserName}`,
+          color: 'blue',
+        })
       }
+      await sleep(1000)
+      this.pollPaymentIntents()
     },
   },
 })

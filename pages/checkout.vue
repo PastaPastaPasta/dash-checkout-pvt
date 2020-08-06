@@ -43,7 +43,9 @@
           <ConnectWallet />
         </v-stepper-content>
 
-        <v-stepper-content step="3"> </v-stepper-content>
+        <v-stepper-content step="3">
+          <AwaitPayment />
+        </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
   </div>
@@ -58,13 +60,14 @@ import { Unit } from '@dashevo/dashcore-lib'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 // import NameAutocomplete from '../components/NameAutocomplete.vue'
 import ConnectWallet from '../components/ConnectWallet.vue'
+import AwaitPayment from '../components/AwaitPayment.vue'
 
 Vue.component(VueQrcode.name, VueQrcode)
 // const timestamp = () => Math.floor(Date.now() / 1000)
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export default Vue.extend({
-  components: { ConnectWallet },
+  components: { ConnectWallet, AwaitPayment },
   data: () => {
     const data: {
       cards: any
@@ -128,6 +131,7 @@ export default Vue.extend({
     checkoutStep: {
       get() {
         return this.$store.getters.checkoutStep
+        // return 3
       },
       set(value) {
         console.log('value :>> ', value)
